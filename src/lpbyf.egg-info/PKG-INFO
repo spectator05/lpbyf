@@ -1,0 +1,10 @@
+Metadata-Version: 2.1
+Name: lpbyf
+Version: 0.1.0
+Summary: Label pcaps by flow
+Home-page: https://github.com/spectator05/lpbyf
+Author: Woohyuk Jang
+Author-email: spectat@kookmin.ac.kr
+License: MIT
+Keywords: pcacp
+License-File: LICENSE
