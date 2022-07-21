@@ -1,4 +1,3 @@
-from email.errors import HeaderDefect
 import os
 import platform
 import time
@@ -40,6 +39,18 @@ class Lpbyf:
         ts, te format must timestamp(match with pcap timestamp)
         header_dict's key is each column, value is your flow csv column name
         """
+        header_label = [
+            "timestart",
+            "timeend",
+            "label",
+            "source address",
+            "destination address",
+            "source port",
+            "destination port",
+            "protocol",
+        ]
+        header_idx = []
+
         if header_dict:
             self.header_dict = header_dict
 
@@ -48,30 +59,37 @@ class Lpbyf:
             reader = csv.reader(f, delimiter=",")
             header = next(reader)
             print(header)
-            ts_idx = header.index(self.header_dict["timestart"])
-            te_idx = header.index(self.header_dict["timeend"])
-            label_idx = header.index(self.header_dict["label"])
-            sa_idx = header.index(self.header_dict["source address"])
-            da_idx = header.index(self.header_dict["destination address"])
-            sp_idx = header.index(self.header_dict["source port"])
-            dp_idx = header.index(self.header_dict["destination port"])
-            prtcl_idx = header.index(self.header_dict["protocol"])
+
+            """
+            Index Values
+            [0] timestart
+            [1] timeend
+            [2] label
+            [3] source address
+            [4] destination port
+            [5] source address
+            [6] destination port
+            [7] protocol
+            """
+
+            for i in range(len(header_label)):
+                header_idx.append(header.index(self.header_dict[header_label[i]]))
 
             for row in reader:
                 key = "_".join(
                     [
-                        str(row[sa_idx]),
-                        str(row[da_idx]),
-                        str(row[sp_idx]),
-                        str(row[dp_idx]),
-                        str(row[prtcl_idx]).lower(),
+                        str(row[header_idx[3]]),
+                        str(row[header_idx[4]]),
+                        str(row[header_idx[5]]),
+                        str(row[header_idx[6]]),
+                        str(row[header_idx[7]]).lower(),
                     ]
                 )
                 if not (key in self.label_dict):
                     self.label_dict[key] = {}
-                self.label_dict[key][float(row[ts_idx])] = [
-                    float(row[te_idx]),
-                    row[label_idx],
+                self.label_dict[key][float(row[header_idx[0]])] = [
+                    float(row[header_idx[1]]),
+                    row[header_idx[2]],
                 ]
 
     def check_timestamp(self, key: str, timestamp: float):
@@ -95,14 +113,12 @@ class Lpbyf:
         if key2 in self.label_dict:
             label2 = self.check_timestamp(key2, timestamp)
 
-        if len(label1) == 0 and len(label2) == 0:
-            return "unknown"
+        if label1 == label2 and len(label1) != 0:
+            return label1
         elif len(label1) != 0 and len(label2) == 0:
             return label1
         elif len(label2) != 0 and len(label1) == 0:
             return label2
-        elif label1 == label2:
-            return label1
         return "unknown"
 
     class Splitter:
