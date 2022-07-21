@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="lpbyf",
-    version="0.1.0",
+    version="0.2.0",
     description="Label pcaps by flow",
     license="MIT",
     author="Woohyuk Jang",
